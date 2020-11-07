@@ -471,4 +471,37 @@
   <data name="DisplayAffinity.Content" xml:space="preserve">
     <value>喵喵</value>
   </data>
+  <data name="InteractType_Text1" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="InteractType_Text2" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="InteractType_Text3" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="InteractType_Text4" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="InteractType_Text5" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="InteractType_TextFormat" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="InteractType_Unknown" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="Interact_Content" xml:space="preserve">
+    <value>喵喵</value>
+  </data>
+  <data name="Btn_Text_OpenPluginDir" xml:space="preserve">
+    <value>喵咪</value>
+  </data>
+  <data name="ChangeSkin" xml:space="preserve">
+    <value>喵喵喵喵</value>
+  </data>
+  <data name="SkinSelector" xml:space="preserve">
+    <value>喵喵喵喵喵</value>
+  </data>
 </root>

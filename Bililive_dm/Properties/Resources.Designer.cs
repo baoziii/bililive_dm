@@ -79,6 +79,15 @@ namespace Bililive_dm.Properties {
         }
         
         /// <summary>
+        ///   查找类似 打開外掛程式資料夾 的本地化字符串。
+        /// </summary>
+        public static string Btn_Text_OpenPluginDir {
+            get {
+                return ResourceManager.GetString("Btn_Text_OpenPluginDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 還原默認 的本地化字符串。
         /// </summary>
         public static string Button_Content_Default {
@@ -93,6 +102,15 @@ namespace Bililive_dm.Properties {
         public static string Button_Content_Text {
             get {
                 return ResourceManager.GetString("Button.Content.Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 更換主題 的本地化字符串。
+        /// </summary>
+        public static string ChangeSkin {
+            get {
+                return ResourceManager.GetString("ChangeSkin", resourceCulture);
             }
         }
         
@@ -295,7 +313,79 @@ namespace Bililive_dm.Properties {
         }
         
         /// <summary>
-        ///   查找类似 直播間地址: http://live.bilibili.com/ 的本地化字符串。
+        ///   查找类似 觀客互動 的本地化字符串。
+        /// </summary>
+        public static string Interact_Content {
+            get {
+                return ResourceManager.GetString("Interact_Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 進入了直播間 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Text1 {
+            get {
+                return ResourceManager.GetString("InteractType_Text1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 關注了直播間 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Text2 {
+            get {
+                return ResourceManager.GetString("InteractType_Text2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 分享了直播間 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Text3 {
+            get {
+                return ResourceManager.GetString("InteractType_Text3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 特別關注 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Text4 {
+            get {
+                return ResourceManager.GetString("InteractType_Text4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 相互關注 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Text5 {
+            get {
+                return ResourceManager.GetString("InteractType_Text5", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0} {1} 的本地化字符串。
+        /// </summary>
+        public static string InteractType_TextFormat {
+            get {
+                return ResourceManager.GetString("InteractType_TextFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 发生了未知的互动事件 的本地化字符串。
+        /// </summary>
+        public static string InteractType_Unknown {
+            get {
+                return ResourceManager.GetString("InteractType_Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 直播間地址: https://live.bilibili.com/ 的本地化字符串。
         /// </summary>
         public static string LiveRoomAddr {
             get {
@@ -872,6 +962,15 @@ namespace Bililive_dm.Properties {
         }
         
         /// <summary>
+        ///   查找类似 彈幕模式使用熒幕 的本地化字符串。
+        /// </summary>
+        public static string ScreenSelecter {
+            get {
+                return ResourceManager.GetString("ScreenSelecter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 顯示出錯信息 的本地化字符串。
         /// </summary>
         public static string ShowError_Content {
@@ -895,6 +994,15 @@ namespace Bililive_dm.Properties {
         public static string SideBar_Content {
             get {
                 return ResourceManager.GetString("SideBar.Content", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 主題選擇器 的本地化字符串。
+        /// </summary>
+        public static string SkinSelector {
+            get {
+                return ResourceManager.GetString("SkinSelector", resourceCulture);
             }
         }
         

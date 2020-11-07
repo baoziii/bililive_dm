@@ -10,18 +10,24 @@ using System.Windows;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
-using BilibiliDM_PluginFramework;
+using System.Reflection;
+using System.Resources;
+using System.IO.Compression;
 
 namespace Bililive_dm
 {
+    using BilibiliDM_PluginFramework;
+
     /// <summary>
     /// App.xaml 的互動邏輯
     /// </summary>
-    public partial class App : Application
+    public partial class App: Application
     {
+        internal Collection<ResourceDictionary> merged { get; private set; }
+
         public App()
         {
-            
+
             AddArchSpecificDirectory();
             Application.Current.DispatcherUnhandledException += App_DispatcherUnhandledException;
             try
@@ -35,9 +41,16 @@ namespace Bililive_dm
                 Bililive_dm.Properties.Settings.Default.Reload();
 
             }
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Bililive_dm.Properties.Settings.Default.lang);
 
+            var culture = CultureInfo.GetCultureInfo(Bililive_dm.Properties.Settings.Default.lang);
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+            Thread.CurrentThread.CurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
         }
+
+        public static new App Current => (App)Application.Current;
 
         private void AddArchSpecificDirectory()
         {
@@ -59,7 +72,7 @@ namespace Bililive_dm
                 using (StreamWriter outfile = new StreamWriter(path + @"\B站彈幕姬錯誤報告.txt"))
                 {
                     outfile.WriteLine("請有空發給 copyliu@gmail.com 謝謝");
-                    outfile.WriteLine(DateTime.Now +"");
+                    outfile.WriteLine(DateTime.Now + "");
                     outfile.Write(e.Exception.ToString());
                     outfile.WriteLine("-------插件列表--------");
                     foreach (var dmPlugin in Plugins)
@@ -75,6 +88,12 @@ namespace Bililive_dm
             }
         }
 
-        public static  readonly ObservableCollection<DMPlugin> Plugins = new ObservableCollection<DMPlugin>();
+        public static readonly ObservableCollection<DMPlugin> Plugins = new ObservableCollection<DMPlugin>();
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            merged = Resources.MergedDictionaries;
+            merged.Add((ResourceDictionary)Resources["Default"]);
+        }
     }
 }

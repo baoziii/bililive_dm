@@ -15,6 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Windows.Interop;
 using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace Bililive_dm
 {
@@ -36,6 +37,7 @@ namespace Bililive_dm
                 IntPtr hWnd = new WindowInteropHelper(this).Handle;
                 var exStyles = GetExtendedWindowStyles(hWnd);
                 SetExtendedWindowStyles(hWnd, exStyles | ExtendedWindowStyles.Transparent | ExtendedWindowStyles.ToolWindow);
+                SetMonitor(Store.FullScreenMonitor);
             };
             this.ShowInTaskbar = false;
             this.Topmost = true;
@@ -136,6 +138,16 @@ namespace Bililive_dm
             }
         }
 
+        public void SetMonitor(string deviceName)
+        {
+            Screen s = Screen.AllScreens.FirstOrDefault(p => p.DeviceName == deviceName) ?? Screen.PrimaryScreen;
+            System.Drawing.Rectangle r = s.WorkingArea;
+            this.Top = r.Top;
+            this.Left = r.Left;
+            this.Width = r.Width;
+            
+        }
+
         private void s_Completed(object sender, EventArgs e)
         {
             var s = sender as ClockGroup;
@@ -159,6 +171,12 @@ namespace Bililive_dm
         {
             WindowInteropHelper wndHelper = new WindowInteropHelper(this);
             SetWindowDisplayAffinity(wndHelper.Handle, Store.DisplayAffinity ? WindowDisplayAffinity.ExcludeFromCapture : 0);
+
+
+            if (e.PropertyName == nameof(Store.FullScreenMonitor))
+            {
+                SetMonitor(Store.FullScreenMonitor);
+            }
             // ignore
         }
     }

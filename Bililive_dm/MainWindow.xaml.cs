@@ -33,6 +33,7 @@ using ContextMenu = System.Windows.Controls.ContextMenu;
 using DataGrid = System.Windows.Controls.DataGrid;
 using MenuItem = System.Windows.Controls.MenuItem;
 using MessageBox = System.Windows.MessageBox;
+using System.Windows.Markup;
 
 namespace Bililive_dm
 {
@@ -41,7 +42,7 @@ namespace Bililive_dm
     /// <summary>
     ///     MainWindow.xaml 的互動邏輯
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow: StyledWindow
     {
         private const int _maxCapacity = 100;
         private readonly Queue<DanmakuModel> _danmakuQueue = new Queue<DanmakuModel>();
@@ -66,7 +67,7 @@ namespace Bililive_dm
 
         private bool net461 = false;
 
-        private  void Get45or451FromRegistry()
+        private void Get45or451FromRegistry()
         {
             using (RegistryKey ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP\\v4\\Full\\"))
             {
@@ -82,16 +83,22 @@ namespace Bililive_dm
             }
         }
 
+        Collection<ResourceDictionary> merged { get; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            merged = Resources.MergedDictionaries;
+            merged.Add(new ResourceDictionary());
+
             Get45or451FromRegistry();
             if (!net461)
             {
                 MessageBox.Show(this,
                     Properties.Resources.MainWindow_MainWindow_NetError);
             }
-            HelpWeb.Navigated+=HelpWebOnNavigated;
+            HelpWeb.Navigated += HelpWebOnNavigated;
             //初始化日志
             // if (!(Debugger.IsAttached ))
             // {
@@ -108,10 +115,10 @@ namespace Bililive_dm
             }
             catch (Exception e)
             {
-                
+
             }
 
-          
+
             try
             {
                 this.RoomId.Text = Properties.Settings.Default.roomId.ToString();
@@ -135,7 +142,7 @@ namespace Bililive_dm
 
             var seconds = int.Parse(fullversion.Split('.')[3]);
             dt = dt.AddDays(dates);
-            dt = dt.AddSeconds(seconds*2);
+            dt = dt.AddSeconds(seconds * 2);
             if (ApplicationDeployment.IsNetworkDeployed)
             {
                 Title += Properties.Resources.MainWindow_MainWindow____版本号__ +
@@ -164,7 +171,7 @@ namespace Bililive_dm
             Title += Properties.Resources.MainWindow_MainWindow____编译时间__ + dt;
 
             Closed += MainWindow_Closed;
-            
+
             b.Disconnected += b_Disconnected;
             b.ReceivedDanmaku += b_ReceivedDanmaku;
             b.ReceivedRoomCount += b_ReceivedRoomCount;
@@ -176,10 +183,10 @@ namespace Bililive_dm
             timer.Start();
 
             DataGrid2.ItemsSource = SessionItems;
-//            fulloverlay.Show();
+            //            fulloverlay.Show();
 
             Log.DataContext = _messageQueue;
-//            log.ScrollToEnd();
+            //            log.ScrollToEnd();
             //            for (int i = 0; i < 150; i++)
             //            {
             //                logging("投喂记录不会在弹幕模式上出现, 这不是bug");
@@ -226,14 +233,14 @@ namespace Bililive_dm
                                 if (danmaku.MsgType == MsgTypeEnum.Comment && enable_regex)
                                 {
                                     if (FilterRegex.IsMatch(danmaku.CommentText)) continue;
-                                 
+
                                 }
 
                                 if (danmaku.MsgType == MsgTypeEnum.Comment && ignorespam_enabled)
                                 {
                                     try
                                     {
-                                        var jobj = (JObject) danmaku.RawDataJToken;
+                                        var jobj = (JObject)danmaku.RawDataJToken;
                                         if (jobj["info"][0][9].Value<int>() != 0)
                                         {
                                             continue;
@@ -241,9 +248,9 @@ namespace Bililive_dm
                                     }
                                     catch (Exception e)
                                     {
-                                      
+
                                     }
-                                  
+
                                 }
                                 ProcDanmaku(danmaku);
                                 if (danmaku.MsgType == MsgTypeEnum.Comment)
@@ -308,7 +315,6 @@ namespace Bililive_dm
             settings.SaveConfig();
             settings.toStatic();
 
-
             Loaded += MainWindow_Loaded;
             Log.Loaded += (sender, args) =>
             {
@@ -318,12 +324,13 @@ namespace Bililive_dm
 
         }
 
+
         private void HelpWebOnNavigated(object o, NavigationEventArgs navigationEventArgs)
         {
-            HelpWeb.Navigated-=HelpWebOnNavigated;
+            HelpWeb.Navigated -= HelpWebOnNavigated;
             HelpWeb.Source = new Uri("https://soft.ceve-market.org/bilibili_dm/app.htm?" + DateTime.Now.Ticks);
             //fuck you IE cache
-            HelpWeb.ObjectForScripting=new ObjectForScriptingHelper(this); 
+            HelpWeb.ObjectForScripting = new ObjectForScriptingHelper(this);
         }
 
         private void b_LogMessage(object sender, LogMessageArgs e)
@@ -333,53 +340,53 @@ namespace Bililive_dm
 
         private void Magic()
         {
-//            var query = Plugins.Where(p => p.PluginName.Contains("点歌"));
-//            if (query.Any())
-//            {
-//                if (!query.First().Status) return;
-//                var ran = new Random();
-//
-//                var n = ran.Next(2);
-//                if (n == 1)
-//                {
-//                    try
-//                    {
-//                        query.First().MainReceivedDanMaku(new ReceivedDanmakuArgs
-//                        {
-//                            Danmaku = new DanmakuModel
-//                            {
-//                                MsgType = MsgTypeEnum.Comment,
-//                                CommentText = "强点 34376018",
-//                                UserName = "弹幕姬",
-//                                isAdmin = true,
-//                                isVIP = true
-//                            }
-//                        });
-//                    }
-//                    catch (Exception)
-//                    {
-//
-//                    }
-//
-//                }
-//                else
-//                {
-//                    try
-//                    {
-//                        var plugin = query.First();
-//                        var T = plugin.GetType();
-//                        var method = T.GetMethod("AddToPlayList");
-//                        method.Invoke(plugin,
-//                            new[] {"弹幕姬敬赠", "弹幕姬", "弹幕姬", "http://soft.ceve-market.org/bilibili_dm/1.mp3"});
-//                    }
-//                    catch (Exception)
-//                    {
-//
-//
-//                    }
-//
-//                }
-//            }
+            //            var query = Plugins.Where(p => p.PluginName.Contains("点歌"));
+            //            if (query.Any())
+            //            {
+            //                if (!query.First().Status) return;
+            //                var ran = new Random();
+            //
+            //                var n = ran.Next(2);
+            //                if (n == 1)
+            //                {
+            //                    try
+            //                    {
+            //                        query.First().MainReceivedDanMaku(new ReceivedDanmakuArgs
+            //                        {
+            //                            Danmaku = new DanmakuModel
+            //                            {
+            //                                MsgType = MsgTypeEnum.Comment,
+            //                                CommentText = "强点 34376018",
+            //                                UserName = "弹幕姬",
+            //                                isAdmin = true,
+            //                                isVIP = true
+            //                            }
+            //                        });
+            //                    }
+            //                    catch (Exception)
+            //                    {
+            //
+            //                    }
+            //
+            //                }
+            //                else
+            //                {
+            //                    try
+            //                    {
+            //                        var plugin = query.First();
+            //                        var T = plugin.GetType();
+            //                        var method = T.GetMethod("AddToPlayList");
+            //                        method.Invoke(plugin,
+            //                            new[] {"弹幕姬敬赠", "弹幕姬", "弹幕姬", "http://soft.ceve-market.org/bilibili_dm/1.mp3"});
+            //                    }
+            //                    catch (Exception)
+            //                    {
+            //
+            //
+            //                    }
+            //
+            //                }
+            //            }
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -391,9 +398,10 @@ namespace Bililive_dm
             EnableRegex.IsChecked = enable_regex;
             IgnoreSpam.IsChecked = ignorespam_enabled;
             ShowItem.IsChecked = showvip_enabled;
+            ShowInteract.IsChecked = showInteract_enabled;
             ShowError.IsChecked = showerror_enabled;
             regex = Regex.Text.Trim();
-            FilterRegex=new Regex(regex);
+            FilterRegex = new Regex(regex);
 
 
             var shit = new Thread(() =>
@@ -505,6 +513,7 @@ namespace Bililive_dm
                 fulloverlay = new WtfDanmakuWindow();
             else
                 fulloverlay = new WpfDanmakuOverlay();
+
             settings.PropertyChanged += fulloverlay.OnPropertyChanged;
             fulloverlay.Show();
         }
@@ -572,7 +581,7 @@ namespace Bililive_dm
 
                 while (!connectresult && sender == null && AutoReconnect.IsChecked == true)
                 {
-                    if(trytime > 5)
+                    if (trytime > 5)
                         break;
                     else
                         trytime++;
@@ -624,8 +633,8 @@ namespace Bililive_dm
 
         private void b_ReceivedRoomCount(object sender, ReceivedRoomCountArgs e)
         {
-//            logging("當前房間人數:" + e.UserCount);
-//            AddDMText("當前房間人數", e.UserCount+"", true);
+            //            logging("當前房間人數:" + e.UserCount);
+            //            AddDMText("當前房間人數", e.UserCount+"", true);
             //AddDMText(e.Danmaku.CommentUser, e.Danmaku.CommentText);
             if (CheckAccess())
             {
@@ -674,16 +683,16 @@ namespace Bililive_dm
                 _danmakuQueue.Enqueue(danmakuModel);
             }
 
-            foreach(var dmPlugin in App.Plugins)
+            foreach (var dmPlugin in App.Plugins)
             {
-                if(dmPlugin.Status)
+                if (dmPlugin.Status)
                     new Thread(() =>
                     {
                         try
                         {
                             dmPlugin.MainReceivedDanMaku(e);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Utils.PluginExceptionHandler(ex, dmPlugin);
                         }
@@ -715,9 +724,9 @@ namespace Bililive_dm
                         string.Format(Properties.Resources.SuperChatLogName, (danmakuModel.isAdmin ? Properties.Resources.MainWindow_ProcDanmaku__管理員前綴_ : ""), (danmakuModel.isVIP ? Properties.Resources.MainWindow_ProcDanmaku__VIP前綴 : ""), danmakuModel.UserName, danmakuModel.CommentText));
 
                     AddDMText(
-                        Properties.Resources.MainWindow_ProcDanmaku____SuperChat___+(danmakuModel.isAdmin ? Properties.Resources.MainWindow_ProcDanmaku__管理員前綴_ : "") + (danmakuModel.isVIP ? Properties.Resources.MainWindow_ProcDanmaku__VIP前綴 : "") +
-                        danmakuModel.UserName +" ￥:"+danmakuModel.Price.ToString("N2"),
-                        danmakuModel.CommentText,keeptime:danmakuModel.SCKeepTime,warn:true);
+                        Properties.Resources.MainWindow_ProcDanmaku____SuperChat___ + (danmakuModel.isAdmin ? Properties.Resources.MainWindow_ProcDanmaku__管理員前綴_ : "") + (danmakuModel.isVIP ? Properties.Resources.MainWindow_ProcDanmaku__VIP前綴 : "") +
+                        danmakuModel.UserName + " ￥:" + danmakuModel.Price.ToString("N2"),
+                        danmakuModel.CommentText, keeptime: danmakuModel.SCKeepTime, warn: true);
                     SendSSP(string.Format(@"\_q{0}\n\_q\f[height,20]{1}",
                         (danmakuModel.isAdmin ? Properties.Resources.MainWindow_ProcDanmaku__管理員前綴_ : "") + (danmakuModel.isVIP ? Properties.Resources.MainWindow_ProcDanmaku__VIP前綴 : "") +
                         danmakuModel.UserName,
@@ -793,7 +802,7 @@ namespace Bililive_dm
                     logging(string.Format(Properties.Resources.MainWindow_ProcDanmaku_上船__0__购买了__1__x__2_, danmakuModel.UserName, danmakuModel.GiftName, danmakuModel.GiftCount));
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
-                        if(ShowItem.IsChecked == true)
+                        if (ShowItem.IsChecked == true)
                         {
                             AddDMText(Properties.Resources.MainWindow_ProcDanmaku_上船,
                                 string.Format(Properties.Resources.MainWindow_ProcDanmaku__0__购买了__1__x__2_, danmakuModel.UserName, danmakuModel.GiftName, danmakuModel.GiftCount), true);
@@ -817,31 +826,70 @@ namespace Bililive_dm
                     break;
                 }
                 case MsgTypeEnum.WelcomeGuard:
+                {
+                    string guard_text = string.Empty;
+                    switch (danmakuModel.UserGuardLevel)
                     {
-                        string guard_text = string.Empty;
-                        switch(danmakuModel.UserGuardLevel)
-                        {
-                            case 1:
-                                guard_text = Properties.Resources.MainWindow_ProcDanmaku_总督;
-                                break;
-                            case 2:
-                                guard_text = Properties.Resources.MainWindow_ProcDanmaku_提督;
-                                break;
-                            case 3:
-                                guard_text = Properties.Resources.MainWindow_ProcDanmaku_舰长;
-                                break;
-                        }
-                        logging(
-                            string.Format(Properties.Resources.MainWindow_ProcDanmaku_欢迎_0____1__2_, guard_text, danmakuModel.UserName, Properties.Resources.MainWindow_ProcDanmaku__进入直播间));
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            if(ShowItem.IsChecked == true)
-                            {
-                                AddDMText(string.Format(Properties.Resources.MainWindow_ProcDanmaku_欢迎_0_, guard_text), danmakuModel.UserName + Properties.Resources.MainWindow_ProcDanmaku__进入直播间, true);
-                            }
-                        }));
-                        break;
+                        case 1:
+                            guard_text = Properties.Resources.MainWindow_ProcDanmaku_总督;
+                            break;
+                        case 2:
+                            guard_text = Properties.Resources.MainWindow_ProcDanmaku_提督;
+                            break;
+                        case 3:
+                            guard_text = Properties.Resources.MainWindow_ProcDanmaku_舰长;
+                            break;
                     }
+                    logging(
+                        string.Format(Properties.Resources.MainWindow_ProcDanmaku_欢迎_0____1__2_, guard_text, danmakuModel.UserName, Properties.Resources.MainWindow_ProcDanmaku__进入直播间));
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (ShowItem.IsChecked == true)
+                        {
+                            AddDMText(string.Format(Properties.Resources.MainWindow_ProcDanmaku_欢迎_0_, guard_text), danmakuModel.UserName + Properties.Resources.MainWindow_ProcDanmaku__进入直播间, true);
+                        }
+                    }));
+                    break;
+                }
+                case MsgTypeEnum.Interact:
+                {
+
+                    string r = Properties.Resources.InteractType_TextFormat;
+                    string text;
+                    switch (danmakuModel.InteractType)
+                    {
+                        case InteractTypeEnum.Enter:
+                            text = Properties.Resources.InteractType_Text1;
+                            break;
+                        case InteractTypeEnum.Follow:
+                            text = Properties.Resources.InteractType_Text2;
+                            break;
+                        case InteractTypeEnum.Share:
+                            text = Properties.Resources.InteractType_Text3;
+                            break;
+                        case InteractTypeEnum.SpecialFollow:
+                            text = Properties.Resources.InteractType_Text4;
+                            break;
+                        case InteractTypeEnum.MutualFollow:
+                            text = Properties.Resources.InteractType_Text5;
+                            break;
+                        default:
+                            text = Properties.Resources.InteractType_Unknown;
+                            break;
+                    }
+
+                    var logtext = string.Format(r, danmakuModel.UserName, text);
+
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        if (ShowInteract.IsChecked == true)
+                        {
+                            logging(logtext);
+                            AddDMText(danmakuModel.UserName, text, true);
+                        }
+                    }));
+                    break;
+                }
             }
             if (rawoutput_mode)
             {
@@ -980,7 +1028,7 @@ namespace Bililive_dm
             }
         }
 
-        public void AddDMText(string user, string text, bool warn = false, bool foreceenablefullscreen = false, int? keeptime=null)
+        public void AddDMText(string user, string text, bool warn = false, bool foreceenablefullscreen = false, int? keeptime = null)
         {
             if (!showerror_enabled && warn)
             {
@@ -991,7 +1039,7 @@ namespace Bililive_dm
             {
                 if (SideBar.IsChecked == true)
                 {
-                    var c = new DanmakuTextControl(keeptime??0);
+                    var c = new DanmakuTextControl(keeptime ?? 0);
 
                     c.UserName.Text = user;
                     if (warn)
@@ -1000,7 +1048,7 @@ namespace Bililive_dm
                     }
                     c.Text.Text = text;
                     c.ChangeHeight();
-                    var sb = (Storyboard) c.Resources["Storyboard1"];
+                    var sb = (Storyboard)c.Resources["Storyboard1"];
                     //Storyboard.SetTarget(sb,c);
                     sb.Completed += sb_Completed;
                     overlay.LayoutRoot.Children.Add(c);
@@ -1012,7 +1060,7 @@ namespace Bililive_dm
             }
             else
             {
-                Log.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => AddDMText(user, text,warn,foreceenablefullscreen,keeptime)));
+                Log.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => AddDMText(user, text, warn, foreceenablefullscreen, keeptime)));
             }
         }
 
@@ -1029,10 +1077,10 @@ namespace Bililive_dm
 
         public void Test_OnClick(object sender, RoutedEventArgs e)
         {
-//            logging("投喂记录不会在弹幕模式上出现, 这不是bug");
+            //            logging("投喂记录不会在弹幕模式上出现, 这不是bug");
             var ran = new Random();
             // _danmakuQueue.Enqueue(new DanmakuModel("{\"cmd\":\"SUPER_CHAT_MESSAGE\",\"data\":{\"id\":\"200541\",\"uid\":18923374,\"price\":30,\"rate\":1000,\"message\":\"\\u4e09\\u4e03\\u662f\\u4e00\\u79cd\\u4e2d\\u836f\\u54e6\\uff08\\u836f\\u5b66\\u5b9d\\u8d1d\\u7684\\u80af\\u5b9a\\uff09\",\"trans_mark\":0,\"is_ranked\":0,\"message_trans\":\"\",\"background_image\":\"http:\\/\\/i0.hdslb.com\\/bfs\\/live\\/1aee2d5e9e8f03eed462a7b4bbfd0a7128bbc8b1.png\",\"background_color\":\"#EDF5FF\",\"background_icon\":\"\",\"background_price_color\":\"#7497CD\",\"background_bottom_color\":\"#2A60B2\",\"ts\":1586521245,\"token\":\"1018B059\",\"medal_info\":{\"icon_id\":0,\"target_id\":168598,\"special\":\"\",\"anchor_uname\":\"\\u900d\\u9065\\u6563\\u4eba\",\"anchor_roomid\":1017,\"medal_level\":11,\"medal_name\":\"\\u523a\\u513f\",\"medal_color\":\"#a068f1\"},\"user_info\":{\"uname\":\"\\u7ebf\\u7c92\\u4f53hl-s\",\"face\":\"http:\\/\\/i2.hdslb.com\\/bfs\\/face\\/c521ea6ef23c738b39f0823a18a7c0bcc1aedfa5.jpg\",\"face_frame\":\"http:\\/\\/i0.hdslb.com\\/bfs\\/live\\/78e8a800e97403f1137c0c1b5029648c390be390.png\",\"guard_level\":3,\"user_level\":10,\"level_color\":\"#969696\",\"is_vip\":0,\"is_svip\":0,\"is_main_vip\":1,\"title\":\"0\",\"manager\":0},\"time\":60,\"start_time\":1586521245,\"end_time\":1586521305,\"gift\":{\"num\":1,\"gift_id\":12000,\"gift_name\":\"\\u9192\\u76ee\\u7559\\u8a00\"}}}\r\n",2));
-            
+
             var n = ran.Next(100);
             if (n > 98)
             {
@@ -1068,7 +1116,7 @@ namespace Bililive_dm
                 }).Start();
             }
 
-//            logging(DateTime.Now.Ticks+"");
+            //            logging(DateTime.Now.Ticks+"");
         }
 
         private void Full_Checked(object sender, RoutedEventArgs e)
@@ -1158,11 +1206,11 @@ namespace Bililive_dm
 
         private void Plugin_Enable(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem) sender;
+            var menuItem = (MenuItem)sender;
 
-            var contextMenu = (ContextMenu) menuItem.Parent;
+            var contextMenu = (ContextMenu)menuItem.Parent;
 
-            var item = (DataGrid) contextMenu.PlacementTarget;
+            var item = (DataGrid)contextMenu.PlacementTarget;
             if (item.SelectedCells.Count == 0) return;
             var plugin = item.SelectedCells[0].Item as DMPlugin;
             if (plugin == null) return;
@@ -1195,11 +1243,11 @@ namespace Bililive_dm
 
         private void Plugin_Disable(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem) sender;
+            var menuItem = (MenuItem)sender;
 
-            var contextMenu = (ContextMenu) menuItem.Parent;
+            var contextMenu = (ContextMenu)menuItem.Parent;
 
-            var item = (DataGrid) contextMenu.PlacementTarget;
+            var item = (DataGrid)contextMenu.PlacementTarget;
             if (item.SelectedCells.Count == 0) return;
             var plugin = item.SelectedCells[0].Item as DMPlugin;
             if (plugin == null) return;
@@ -1232,11 +1280,11 @@ namespace Bililive_dm
 
         private void Plugin_admin(object sender, RoutedEventArgs e)
         {
-            var menuItem = (MenuItem) sender;
+            var menuItem = (MenuItem)sender;
 
-            var contextMenu = (ContextMenu) menuItem.Parent;
+            var contextMenu = (ContextMenu)menuItem.Parent;
 
-            var item = (DataGrid) contextMenu.PlacementTarget;
+            var item = (DataGrid)contextMenu.PlacementTarget;
             if (item.SelectedCells.Count == 0) return;
             var plugin = item.SelectedCells[0].Item as DMPlugin;
             if (plugin == null) return;
@@ -1256,7 +1304,7 @@ namespace Bililive_dm
 
                     using (var outfile = new StreamWriter(path + @"\B站彈幕姬插件" + plugin.PluginName + "錯誤報告.txt"))
                     {
-                        outfile.WriteLine(DateTime.Now+ " "+ string.Format(Properties.Resources.MainWindow_Plugin_Enable_請有空發給聯繫方式__0__謝謝, plugin.PluginCont));
+                        outfile.WriteLine(DateTime.Now + " " + string.Format(Properties.Resources.MainWindow_Plugin_Enable_請有空發給聯繫方式__0__謝謝, plugin.PluginCont));
                         outfile.WriteLine(plugin.PluginName + " " + plugin.PluginVer);
                         outfile.Write(ex.ToString());
                     }
@@ -1310,7 +1358,7 @@ namespace Bililive_dm
                             {
                                 sw.Restart();
                             }
-                            var plugin = (DMPlugin) Activator.CreateInstance(exportedType);
+                            var plugin = (DMPlugin)Activator.CreateInstance(exportedType);
                             if (debug_mode)
                             {
                                 sw.Stop();
@@ -1330,13 +1378,13 @@ namespace Bililive_dm
                 }
             }
 
-            foreach(var plugin in App.Plugins)
+            foreach (var plugin in App.Plugins)
             {
                 try
                 {
                     plugin.Inited();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(
                         string.Format(Properties.Resources.MainWindow_Plugin_Disable_插件報錯2, plugin.PluginName, plugin.PluginAuth, plugin.PluginCont));
@@ -1344,14 +1392,14 @@ namespace Bililive_dm
                     {
                         var desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-                        using(var outfile = new StreamWriter(desktop + @"\B站彈幕姬插件" + plugin.PluginName + "錯誤報告.txt"))
+                        using (var outfile = new StreamWriter(desktop + @"\B站彈幕姬插件" + plugin.PluginName + "錯誤報告.txt"))
                         {
                             outfile.WriteLine(DateTime.Now + " " + string.Format(Properties.Resources.MainWindow_Plugin_Enable_請有空發給聯繫方式__0__謝謝, plugin.PluginCont));
                             outfile.WriteLine(plugin.PluginName + " " + plugin.PluginVer);
                             outfile.Write(ex.ToString());
                         }
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                     }
                 }
@@ -1364,7 +1412,7 @@ namespace Bililive_dm
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             path = Path.Combine(path, "弹幕姬", "Plugins");
-            if(Directory.Exists(path))
+            if (Directory.Exists(path))
             {
                 Process.Start(path);
             }
@@ -1375,9 +1423,9 @@ namespace Bililive_dm
                     Directory.CreateDirectory(path);
                     Process.Start(path);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(Properties.Resources.MainWindow_OpenPluginFolder_OnClick_+ex.Message, Properties.Resources.MainWindow_OpenPluginFolder_OnClick_打开插件文件夹出错, MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(Properties.Resources.MainWindow_OpenPluginFolder_OnClick_ + ex.Message, Properties.Resources.MainWindow_OpenPluginFolder_OnClick_打开插件文件夹出错, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -1405,6 +1453,16 @@ namespace Bililive_dm
         private void ShowItem_OnUnchecked(object sender, RoutedEventArgs e)
         {
             showvip_enabled = false;
+        }
+
+        private void ShowInteract_OnChecked(object sender, RoutedEventArgs e)
+        {
+            showInteract_enabled = true;
+        }
+
+        private void ShowInteract_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            showInteract_enabled = false;
         }
 
         private void SSTP_OnChecked(object sender, RoutedEventArgs e)
@@ -1465,6 +1523,7 @@ namespace Bililive_dm
         private bool savelog_enabled = true;
         private bool sendssp_enabled = true;
         private bool showvip_enabled = true;
+        private bool showInteract_enabled = true;
         private bool showerror_enabled = true;
         private bool rawoutput_mode = false;
         private bool enable_regex = false;
@@ -1497,7 +1556,7 @@ namespace Bililive_dm
             }
             catch (Exception exception)
             {
-                
+
             }
         }
 
@@ -1515,10 +1574,37 @@ namespace Bililive_dm
 
         private void SelectLanguage(object sender, RoutedEventArgs e)
         {
-           LanguageSelector lg=new LanguageSelector();
-           lg.Owner = this;
-           lg.ShowDialog();
+            LanguageSelector lg = new LanguageSelector();
+            lg.Owner = this;
+            lg.ShowDialog();
 
+        }
+
+        private void Skin_Click(object sender, RoutedEventArgs e)
+        {
+            var selector = new Selector
+            {
+                Owner = this,
+                WindowStyle = WindowStyle.ToolWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            };
+            var curr = App.Current.merged[0];
+            var themes = selector.Themes;
+            var candidates = themes.Where(item => item.Value == curr);
+            var selected = candidates.SingleOrDefault();
+            selector.list.SelectedItem = selected;
+
+            selector.PreviewTheme += skin =>
+            {
+                if (skin == null) return;
+                merged[0] = skin;
+            };
+
+            if (selector.Select() is ResourceDictionary result)
+            {
+                App.Current.merged[0] = result;
+            }
+            merged[0] = new ResourceDictionary();
         }
     }
 }
